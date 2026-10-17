@@ -1,0 +1,28 @@
+# Noctalia Configuration
+# Documentation: https://noctalia.dev
+
+[shell]
+# Clock/date format
+time_format = "{:%I:%M %p}"
+date_format = "%m-%d"
+font_family = "JetBrainsMono Nerd Font Propo"
+
+# Border radius scale (matches niri 16px window corners)
+corner_radius_scale = 1.5
+
+[bar.main]
+margin_ends = 0
+margin_edge = 0
+radius = 0
+thickness = 34
+
+start  = ["launcher", "wallpaper", "workspaces"]
+center = ["clock"]
+end    = ["tray", "notifications", "clipboard", "network", "bluetooth", "volume", "brightness", "battery", "control-center", "session"]
+
+[wallpaper]
+directory = "~/Pictures/Wallpapers"
+
+[widget.clock]
+format = "%I:%M %p"
+

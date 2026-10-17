@@ -1,0 +1,6 @@
+*.bak*
+*.backup*
+*~
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,25 @@
+[general]
+import = ["~/.config/alacritty/themes/noctalia.toml"]
+
+[colors.primary]
+#background = "0x282c3480"
+
+[font]
+# normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
+# bold = { family = "JetBrainsMono Nerd Font", style = "Bold" }
+# italic = { family = "JetBrainsMono Nerd Font", style = "Italic" }
+
+ normal = { family = "Sarasa Mono SC Nerd Font", style = "Regular" }
+ bold   = { family = "Sarasa Mono SC Nerd Font", style = "Bold" }
+ italic = { family = "Sarasa Mono SC Nerd Font", style = "Italic" }
+
+
+size = 12.0
+[window]
+blur = true
+opacity = 0.85
+
+[font.offset]
+#x = -1
+y = 0
+
