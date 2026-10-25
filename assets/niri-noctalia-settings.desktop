@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Noctalia Settings
+Comment=Configure the Noctalia desktop shell
+Exec=noctalia msg settings-open
+Icon=noctalia
+Terminal=false
+Categories=Settings;DesktopSettings;
+StartupNotify=false

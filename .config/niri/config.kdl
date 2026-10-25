@@ -3,12 +3,10 @@
 // Check the wiki for a full description of the configuration:
 // https://yalter.github.io/niri/Configuration:-Introduction
 
+// Optional Fcitx5 environment. Remove these variables if using another input method.
 environment {
-  
-  LC_MESSAGES "zh_CN.UTF-8"
-  XMODIFIERS "@im=fcitx"
-  // GTK_IM_MODULE "fcitx"
-  QT_IM_MODULE "fcitx"
+    XMODIFIERS "@im=fcitx"
+    QT_IM_MODULE "fcitx"
 }
 
 // Input device configuration.
@@ -78,48 +76,8 @@ input {
     // focus-follows-mouse max-scroll-amount="0%"
 }
 
-// You can configure outputs by their name, which you can find
-// by running `niri msg outputs` while inside a niri instance.
-// The built-in laptop monitor is usually called "eDP-1".
-// Find more information on the wiki:
-// https://yalter.github.io/niri/Configuration:-Outputs
-// Remember to uncomment the node by removing "/-"!
-output "eDP-1" {
-    // Uncomment this line to disable this output.
-    // off
-
-    // Resolution and, optionally, refresh rate of the output.
-    // The format is "<width>x<height>" or "<width>x<height>@<refresh rate>".
-    // If the refresh rate is omitted, niri will pick the highest refresh rate
-    // for the resolution.
-    // If the mode is omitted altogether or is invalid, niri will pick one automatically.
-    // Run `niri msg outputs` while inside a niri instance to list all outputs and their modes.
-    mode "2560x1600"
-
-    // You can use integer or fractional scale, for example use 1.5 for 150% scale.
-    scale 1.75
-
-    // Transform allows to rotate the output counter-clockwise, valid values are:
-    // normal, 90, 180, 270, flipped, flipped-90, flipped-180 and flipped-270.
-    transform "normal"
-
-    // Position of the output in the global coordinate space.
-    // This affects directional monitor actions like "focus-monitor-left", and cursor movement.
-    // The cursor can only move between directly adjacent outputs.
-    // Output scale and rotation has to be taken into account for positioning:
-    // outputs are sized in logical, or scaled, pixels.
-    // For example, a 3840×2160 output with scale 2.0 will have a logical size of 1920×1080,
-    // so to put another output directly adjacent to it on the right, set its x to 1920.
-    // If the position is unset or results in an overlap, the output is instead placed
-    // automatically.
-    position x=0 y=0
-}
-output "HDMI-A-1"{
-  mode "1920x1080"
-  scale 1
-  transform "normal"
-  position x=-1920 y=0
-}
+// Niri chooses output mode, scale and placement by default.
+// Add explicit output rules here when a custom multi-monitor layout is needed.
 
 // Settings that influence how windows are positioned and sized.
 // Find more information on the wiki:
@@ -282,19 +240,20 @@ layout {
 // which may be more convenient to use.
 // See the binds section below for more spawn examples.
 
+// Start Noctalia and Fcitx5 only when their commands are available.
+spawn-sh-at-startup "command -v noctalia >/dev/null 2>&1 && exec env -u LC_ALL LC_TIME=C noctalia"
+spawn-sh-at-startup "command -v fcitx5 >/dev/null 2>&1 && exec fcitx5"
+
+// Start the first available polkit agent; package paths vary across distributions.
+spawn-sh-at-startup "for agent in polkit-gnome-authentication-agent-1 polkit-mate-authentication-agent-1 lxqt-policykit-agent /usr/libexec/polkit-gnome-authentication-agent-1 /usr/libexec/polkit-mate-authentication-agent-1 /usr/libexec/polkit-kde-authentication-agent-1; do if [ -x \"$agent\" ] || command -v \"$agent\" >/dev/null 2>&1; then exec \"$agent\"; fi; done"
+
 // This line starts waybar, a commonly used bar for Wayland compositors.
 // spawn-at-startup "waybar"
-spawn-at-startup "fcitx5"
 // spawn-at-startup "swaync"
 // spawn-at-startup "swww-daemon"
-// spawn-at-startup "~/.config/niri/scripts/swayidle.sh"  // 2026-10-01 移交 systemd user unit swayidle.service(enabled), 防双 swayidle
-// swayidle.service WantedBy=graphical-session.target; 显式拉起该 target 保证重启后 unit 生效
-spawn-at-startup "systemctl --user start graphical-session.target"
 // spawn-at-startup "copyq & disown"
-spawn-at-startup "/usr/libexec/polkit-mate-authentication-agent-1"
 // spawn-at-startup "waypaper"
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
-// spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
 
 hotkey-overlay {
     // Uncomment this line to disable the "Important Hotkeys" pop-up at startup.
@@ -492,10 +451,13 @@ binds {
     // shows a list of important hotkeys.
     Mod+Shift+Slash { show-hotkey-overlay; }
 
+    // Pick the first installed terminal at runtime; no terminal is a hard dependency.
+    Mod+Return hotkey-overlay-title="Open a Terminal" { spawn-sh "for app in \"${TERMINAL:-}\" alacritty kitty foot ghostty wezterm konsole ptyxis; do if [ -n \"$app\" ] && command -v \"$app\" >/dev/null 2>&1; then exec \"$app\"; fi; done"; }
+    // Noctalia's launcher provides app search even when an optional launcher is absent.
+    Mod+Space hotkey-overlay-title="Noctalia Application Launcher" { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
+
     // Suggested binds for running programs: terminal, app launcher, screen locker.
-    Mod+T hotkey-overlay-title="Open a Terminal: alacritty" { spawn "alacritty"; }
     Alt+Space hotkey-overlay-title="Noctalia Launcher" { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
-    Mod+Space hotkey-overlay-title="Spotlight: Walker" { spawn "walker"; }
     Mod+Y hotkey-overlay-title="Clipboard History: Noctalia" { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
     Super+Alt+L hotkey-overlay-title="Lock the Screen" { spawn "noctalia" "msg" "session" "lock"; }
 
@@ -509,7 +471,6 @@ binds {
     XF86AudioLowerVolume allow-when-locked=true { spawn "noctalia" "msg" "volume-down"; }
     XF86AudioMute        allow-when-locked=true { spawn "noctalia" "msg" "volume-mute"; }
     XF86AudioMicMute     allow-when-locked=true { spawn "noctalia" "msg" "mic-mute"; }
-    Ctrl+Alt+V { spawn "~/.local/bin/changeVoiceOutput.sh"; }
 
     // Example media keys mapping using Noctalia media integration.
     XF86AudioPlay        allow-when-locked=true { spawn "noctalia" "msg" "media" "play-pause"; }
@@ -517,9 +478,9 @@ binds {
     XF86AudioPrev        allow-when-locked=true { spawn "noctalia" "msg" "media" "previous"; }
     XF86AudioNext        allow-when-locked=true { spawn "noctalia" "msg" "media" "next"; }
 
-    // Example brightness key mappings using Noctalia OSD (targeting eDP-1 laptop display).
-    XF86MonBrightnessUp allow-when-locked=true { spawn "noctalia" "msg" "brightness-up" "eDP-1" "10"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "noctalia" "msg" "brightness-down" "eDP-1" "10"; }
+    // Brightness keys map to whichever outputs Noctalia can control.
+    XF86MonBrightnessUp allow-when-locked=true { spawn "noctalia" "msg" "brightness-up"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "noctalia" "msg" "brightness-down"; }
 
     // Open/close the Overview: a zoomed-out view of workspaces and windows.
     // You can also move the mouse into the top-left hot corner,
@@ -749,10 +710,8 @@ binds {
     // moving the mouse or pressing any other key.
     Mod+Shift+P { power-off-monitors; }
 
-    // chaange the changeVoiceOutput
 }
 // Add to the end of ~/.config/niri/config.kdl
-// include "dms/colors.kdl"
 include "dms/layout.kdl"
 include "dms/alttab.kdl"
 include "dms/binds.kdl"
