@@ -2,6 +2,14 @@
 
 A Niri + Noctalia v5 desktop preset with a Catppuccin-inspired palette, soft corners, a compact top bar, a 12-hour AM/PM clock, and an adaptive dock.
 
+## Preview
+
+| Desktop | Bundled wallpaper |
+| :---: | :---: |
+| ![Desktop](assets/screenshot.png) | ![Wallpaper](assets/wallpaper.png) |
+
+The screenshot shows a customized session. Applications, fonts and monitor layout depend on local detection and personal preferences.
+
 ## Requirements
 
 - Linux with Niri 25.11+ and Noctalia v5.
